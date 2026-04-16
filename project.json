@@ -1,0 +1,28 @@
+{
+  "overview": "Time Reel is a next-generation short video social platform inspired by TikTok. Watch and discover viral short videos with an infinite vertical feed, upload your own content, follow creators, engage with likes and comments, and support creators with virtual gifts. Features a futuristic dark-mode UI with smooth animations and a creator monetization system powered by virtual coins and gifts.",
+  "features": [
+    "Infinite vertical video feed with snap-to-video scroll",
+    "Video upload with title, tags, and category",
+    "Creator profiles with follower/following system",
+    "Likes, comments, and shares on videos",
+    "Trending discovery page with engagement-velocity scoring",
+    "Time-based trending score with decay",
+    "Virtual gift system — send coins to creators",
+    "Coin wallet and coin purchase packs",
+    "Creator earnings dashboard",
+    "Dark mode first futuristic UI",
+    "Internet Identity authentication",
+    "Protected upload and gift routes"
+  ],
+  "category": "social",
+  "tags": [
+    "short-video",
+    "social-media",
+    "tiktok",
+    "creator-monetization",
+    "trending",
+    "dark-mode",
+    "video-feed"
+  ],
+  "last_updated": "2026-04-15T19:10:07.518Z"
+}

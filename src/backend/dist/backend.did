@@ -1,0 +1,225 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type VideoId = text;
+type Video = 
+ record {
+   category: text;
+   commentCount: nat;
+   createdAt: Timestamp;
+   description: text;
+   expiresAt: opt Timestamp;
+   giftCount: nat;
+   id: VideoId;
+   likeCount: nat;
+   shareCount: nat;
+   tags: vec text;
+   thumbnailBlob: ExternalBlob;
+   title: text;
+   trendingScore: float64;
+   uploaderHandle: text;
+   uploaderId: UserId;
+   videoBlob: ExternalBlob;
+   viewCount: nat;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   avatarBlob: opt ExternalBlob;
+   bio: text;
+   coinBalance: nat;
+   displayName: text;
+   followerCount: nat;
+   followingCount: nat;
+   handle: text;
+   joinedAt: Timestamp;
+   "principal": UserId;
+   totalCoinsEarned: nat;
+   totalLikes: nat;
+   totalVideos: nat;
+ };
+type UserId = principal;
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type TransactionType = 
+ variant {
+   gift_received;
+   gift_sent;
+   purchase;
+ };
+type TransactionId = text;
+type Timestamp = int;
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type SaveProfileArgs = 
+ record {
+   avatarBlob: opt ExternalBlob;
+   bio: text;
+   displayName: text;
+   handle: text;
+ };
+type GiftType = 
+ variant {
+   crown;
+   diamond;
+   heart;
+   rocket;
+   rose;
+ };
+type GiftId = text;
+type Gift = 
+ record {
+   coinValue: nat;
+   createdAt: Timestamp;
+   giftEmoji: text;
+   id: GiftId;
+   receiverPrincipal: UserId;
+   senderPrincipal: UserId;
+   videoId: VideoId;
+ };
+type ExternalBlob = blob;
+type CreateVideoArgs = 
+ record {
+   category: text;
+   description: text;
+   tags: vec text;
+   thumbnailBlob: ExternalBlob;
+   title: text;
+   videoBlob: ExternalBlob;
+ };
+type CommentWithContext = 
+ record {
+   authorAvatar: text;
+   authorHandle: text;
+   createdAt: Timestamp;
+   id: CommentId;
+   isLiked: bool;
+   likeCount: nat;
+   "text": text;
+   videoId: VideoId;
+ };
+type CommentId = text;
+type CoinTransaction = 
+ record {
+   amount: nat;
+   createdAt: Timestamp;
+   id: TransactionId;
+   referenceId: text;
+   transactionType: TransactionType;
+   userPrincipal: UserId;
+ };
+type CoinPack = 
+ record {
+   coins: nat;
+   displayName: text;
+   id: text;
+   priceInCents: nat;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addComment: (videoId: VideoId, "text": text) -> (CommentWithContext);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  createVideo: (args: CreateVideoArgs) -> (Video);
+  deleteComment: (videoId: VideoId, commentId: CommentId) -> ();
+  deleteVideo: (videoId: VideoId) -> ();
+  editVideo: (videoId: VideoId, title: text, description: text, tags:
+   vec text, category: text) -> (Video);
+  followUser: (target: UserId) -> ();
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCoinBalance: () -> (nat) query;
+  getCoinPacks: () -> (vec CoinPack) query;
+  getCoinTransactions: () -> (vec CoinTransaction) query;
+  getComments: (videoId: VideoId) -> (vec CommentWithContext);
+  getCreatorEarnings: () ->
+   (record {
+      recentGifts: vec Gift;
+      totalCoins: nat;
+    }) query;
+  getMyProfile: () -> (UserProfile) query;
+  getProfile: (userId: UserId) -> (opt UserProfile) query;
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  getTrendingVideos: (category: opt text, limit: nat) -> (vec Video) query;
+  getVideo: (videoId: VideoId) -> (opt Video) query;
+  getVideos: (category: opt text, cursor: opt nat, limit: nat) ->
+   (vec Video) query;
+  incrementShare: (videoId: VideoId) -> ();
+  incrementView: (videoId: VideoId) -> ();
+  isCallerAdmin: () -> (bool) query;
+  isStripeConfigured: () -> (bool) query;
+  likeComment: (videoId: VideoId, commentId: CommentId) -> ();
+  likeVideo: (videoId: VideoId) -> ();
+  purchaseCoins: (packId: text, sessionId: text) -> (CoinTransaction);
+  saveCallerUserProfile: (args: SaveProfileArgs) -> (UserProfile);
+  sendGift: (videoId: VideoId, giftType: GiftType) -> (Gift);
+  setStripeConfiguration: (config: StripeConfiguration) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  unfollowUser: (target: UserId) -> ();
+  unlikeComment: (videoId: VideoId, commentId: CommentId) -> ();
+  unlikeVideo: (videoId: VideoId) -> ();
+}

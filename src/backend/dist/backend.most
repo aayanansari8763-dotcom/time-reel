@@ -1,0 +1,188 @@
+// Version: 1.0.0
+type CoinTransaction__453840164 =
+  {
+    amount : Nat;
+    createdAt : Timestamp__301639476;
+    id : TransactionId__138870153;
+    referenceId : Text;
+    transactionType : TransactionType__1024880385;
+    userPrincipal : UserId__158757552
+  };
+type CommentId__821569710 = Text;
+type Comment__549067859 =
+  {
+    authorAvatar : Text;
+    authorHandle : Text;
+    authorPrincipal : UserId__158757552;
+    createdAt : Timestamp__301639476;
+    id : CommentId__821569710;
+    likeCount : Nat;
+    text : Text;
+    videoId : VideoId__498652803
+  };
+type Data__159895909<T> = {var count : Nat__490723111; elements : [var ?T]};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type ExternalBlob__246066408 = Blob;
+type GiftId__244245731 = Text;
+type Gift__374083936 =
+  {
+    coinValue : Nat;
+    createdAt : Timestamp__301639476;
+    giftEmoji : Text;
+    id : GiftId__244245731;
+    receiverPrincipal : UserId__158757552;
+    senderPrincipal : UserId__158757552;
+    videoId : VideoId__498652803
+  };
+type Internal__667636161<T> =
+  {children : [var ?Node__92254746<T>]; data : Data__159895909<T>};
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__520550824<T> = {data : Data__159895909<T>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type List__415060402<T> = List__790383201<T>;
+type List__790383201<T> =
+  {
+    var blockIndex : Nat__490723111;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__490723111
+  };
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Node__92254746<T> =
+  {#internal : Internal__667636161<T>; #leaf : Leaf__520550824<T>};
+type Set__532252804<T> = Set__710576254<T>;
+type Set__710576254<T> =
+  {var root : Node__92254746<T>; var size : Nat__490723111};
+type StripeConfiguration__96897619 =
+  {allowedCountries : [Text]; secretKey : Text};
+type Timestamp__301639476 = Int;
+type TransactionId__138870153 = Text;
+type TransactionType__1024880385 = {#gift_received; #gift_sent; #purchase};
+type UserId__158757552 = Principal;
+type UserProfile__1009003526 =
+  {
+    avatarBlob : ?ExternalBlob__246066408;
+    bio : Text;
+    coinBalance : Nat;
+    displayName : Text;
+    followerCount : Nat;
+    followingCount : Nat;
+    handle : Text;
+    joinedAt : Timestamp__301639476;
+    principal : UserId__158757552;
+    totalCoinsEarned : Nat;
+    totalLikes : Nat;
+    totalVideos : Nat
+  };
+type UserRole__1054455867 = {#admin; #guest; #user};
+type V1Comment__772183313 =
+  {
+    authorHandle : Text;
+    authorPrincipal : UserId__158757552;
+    createdAt : Timestamp__301639476;
+    id : CommentId__821569710;
+    text : Text;
+    videoId : VideoId__498652803
+  };
+type VideoId__498652803 = Text;
+type Video__1048425805 =
+  {
+    category : Text;
+    commentCount : Nat;
+    createdAt : Timestamp__301639476;
+    description : Text;
+    expiresAt : ?Timestamp__301639476;
+    giftCount : Nat;
+    id : VideoId__498652803;
+    likeCount : Nat;
+    shareCount : Nat;
+    tags : [Text];
+    thumbnailBlob : ExternalBlob__246066408;
+    title : Text;
+    trendingScore : Float;
+    uploaderHandle : Text;
+    uploaderId : UserId__158757552;
+    videoBlob : ExternalBlob__246066408;
+    viewCount : Nat
+  };
+actor {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1054455867>
+    };
+  stable coinBalanceStore :
+    {
+      var root : Node__46230540<UserId__158757552, Nat>;
+      var size : Nat__490723111
+    };
+  stable coinTxStore :
+    {
+      var root :
+        Node__46230540<UserId__158757552,
+                        List__415060402<CoinTransaction__453840164>>;
+      var size : Nat__490723111
+    };
+  stable commentLikesStore :
+    {
+      var root :
+        Node__46230540<CommentId__821569710,
+                        Set__532252804<UserId__158757552>>;
+      var size : Nat__490723111
+    };
+  stable commentStore :
+    {
+      var root :
+        Node__46230540<VideoId__498652803,
+                        List__415060402<V1Comment__772183313>>;
+      var size : Nat__490723111
+    };
+  stable commentStoreV2 :
+    {
+      var root :
+        Node__46230540<VideoId__498652803,
+                        List__415060402<Comment__549067859>>;
+      var size : Nat__490723111
+    };
+  stable followStore :
+    {
+      var root :
+        Node__46230540<UserId__158757552, Set__532252804<UserId__158757552>>;
+      var size : Nat__490723111
+    };
+  stable giftStore :
+    {
+      var root : Node__46230540<GiftId__244245731, Gift__374083936>;
+      var size : Nat__490723111
+    };
+  stable likeStore :
+    {
+      var root :
+        Node__46230540<VideoId__498652803, Set__532252804<UserId__158757552>>;
+      var size : Nat__490723111
+    };
+  stable var nextCoinTxId : Nat;
+  stable var nextCommentId : Nat;
+  stable var nextGiftId : Nat;
+  stable var nextSocialCoinTxId : Nat;
+  stable var nextVideoId : Nat;
+  stable profileStore :
+    {
+      var root : Node__46230540<UserId__158757552, UserProfile__1009003526>;
+      var size : Nat__490723111
+    };
+  stable var stripeConfiguration : ?StripeConfiguration__96897619;
+  stable videoStore :
+    {
+      var root : Node__46230540<VideoId__498652803, Video__1048425805>;
+      var size : Nat__490723111
+    }
+};
